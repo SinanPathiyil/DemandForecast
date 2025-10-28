@@ -62,9 +62,13 @@ all_data = []
 for product in products:
     product_data = df_weekly[df_weekly['Product_Name'] == product]
     
-    # Generate all year-week combinations from global min to global max year
-    for year in range(global_min_year, global_max_year + 1):
+    # Generate all year-week combinations from global min to 2025-W42 only
+    for year in range(global_min_year, 2026):  # Go up to 2025
         for week_num in range(1, 54):  # Generate all 53 weeks
+            # Skip weeks in 2025 after W42
+            if year == 2025 and week_num > 42:
+                continue
+            
             year_week = f"{year}-W{week_num:02d}"
             
             # Check if this week exists in data for this product
