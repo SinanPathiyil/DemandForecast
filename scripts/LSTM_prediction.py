@@ -38,9 +38,13 @@ last_sequence = scaled_data[-time_steps:].reshape(1, time_steps, 1)
 # ===============================
 # 3️⃣ Predict next 12 weeks (≈3 months)
 # ===============================
+
+no_weeks = 4
+
+
 future_predictions = []
 
-for i in range(12):  # 12 weeks = 3 months
+for i in range(no_weeks):  # 16 weeks
     next_pred = model.predict(last_sequence)              # shape: (1, 1)
     future_predictions.append(next_pred[0, 0])
     
@@ -62,7 +66,8 @@ last_week_str = product_df['Week'].iloc[-1]
 year, week = map(int, last_week_str.split('-W'))
 last_week = pd.to_datetime(f'{year}-W{week}-1', format='%G-W%V-%u')
 
-future_weeks = pd.date_range(start=last_week + pd.Timedelta(weeks=1), periods=12, freq='W-MON')
+future_weeks = pd.date_range(start=last_week + pd.Timedelta(weeks=1), periods=no_weeks, freq='W-MON')
+
 
 # ===============================
 # 6️⃣ Display forecast results
@@ -72,7 +77,7 @@ future_weeks_iso = [f"{d.isocalendar().year}-W{d.isocalendar().week:02d}" for d 
 forecast_df = pd.DataFrame({
     'Week': future_weeks,
     'Week Number': future_weeks_iso,
-    'Predicted_Quantity': future_predictions.flatten().astype(int)
+    'Predicted_Quantity': np.round(np.array(future_predictions).flatten()).astype(int)
 })
 
 print("\n📅 Next 3-Month Forecast:")
