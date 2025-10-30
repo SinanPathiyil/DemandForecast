@@ -19,6 +19,9 @@ df = df[df['Date'].notna()]
 # Remove "Total" rows
 df = df[~df['Particulars'].str.contains('Total', na=False, case=False)]
 
+# Remove asterisks from product names
+df['Particulars'] = df['Particulars'].str.replace('*', '', regex=False)
+
 # Rename columns for clarity
 df.columns = ['Product_Name', 'Date', 'Qty']
 
@@ -97,7 +100,7 @@ print(df_weekly_filled.head(30))
 print(f"\nTotal rows: {len(df_weekly_filled)}")
 
 # Save to Excel
-df_weekly_filled.to_excel('./data/demand_prediction_weekly.xlsx', index=False)
+df_weekly_filled.to_excel('../data/demand_prediction_weekly.xlsx', index=False)
 print("\nDataset saved as 'demand_prediction_weekly.xlsx'")
 
 # Optional: Check unique products and weeks
