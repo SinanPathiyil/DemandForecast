@@ -3,17 +3,17 @@ import pandas as pd
 from tensorflow.keras.models import load_model
 import matplotlib.pyplot as plt
 
-# ===============================
-# 1️⃣ Load trained model and data
-# ===============================
-model = load_model(r"C:\Users\Strix\Desktop\Boehm Tech\demand forecasting\saved models\best_lstm.keras")
-
 # Load the same dataset used for training
 file_path = "data\demand_prediction_weekly.xlsx"
 sales_data = pd.read_excel(file_path)
 
 # Select the medicine
 selected_medicine = input("Enter the medicine name: ")
+
+# ===============================
+# 1️⃣ Load trained model and data
+# ===============================
+model = load_model(r"C:\Users\Strix\Desktop\Boehm Tech\demand forecasting\saved models\best_lstm.keras")
 
 # Filter for that medicine
 product_df = sales_data[sales_data['Product_Name'] == selected_medicine].copy()
