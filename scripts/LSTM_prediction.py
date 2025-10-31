@@ -30,7 +30,7 @@ from sklearn.preprocessing import MinMaxScaler
 scaler = MinMaxScaler()
 scaled_data = scaler.fit_transform(product_df[['Total_Quantity']])
 
-time_steps = 2  # must match your LSTM training setting
+time_steps = 3  # must match your LSTM training setting
 
 # Take last `time_steps` values as input
 last_sequence = scaled_data[-time_steps:].reshape(1, time_steps, 1)
