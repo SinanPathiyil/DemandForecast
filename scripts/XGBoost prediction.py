@@ -1,25 +1,36 @@
 # ==============================================
 # 📦 Predict Next 8 Weeks (~2 Months) with Iterative Lag Features
 # ==============================================
-
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from xgboost import XGBRegressor
 from sklearn.preprocessing import StandardScaler
-import os
 
 # ------------------- 1️⃣ Load Data -------------------
-file_path = "../data/demand_prediction_weekly.xlsx"
-df = pd.read_excel(file_path)
+from tkinter import Tk, filedialog
 
-# 🧍 Ask user to enter medicine name
-medicine_name = input("Enter the medicine name: ").strip()
+# Open file dialog for user to select Excel file
+root = Tk()
+root.withdraw()  # Hide the root window
+file_path = filedialog.askopenfilename(
+    title="Select Medicine Dataset",
+    filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")]
+)
 
-if medicine_name not in df['Product_Name'].unique():
-    print(f"❌ Medicine '{medicine_name}' not found in dataset!")
-    print("Available medicines:\n", df['Product_Name'].unique())
+if not file_path:
+    print("❌ No file selected. Exiting...")
     exit()
+
+# Extract medicine name from filename (remove .xlsx and everything after first space)
+file_name = os.path.basename(file_path)
+medicine_name = file_name.split('.')[0] # Get first part before space/extension
+
+print(f"✅ Selected file: {file_name}")
+print(f"✅ Medicine name: {medicine_name}\n")
+
+df = pd.read_excel(file_path)
 
 df_med = df[df['Product_Name'] == medicine_name].copy()
 df_med = df_med.sort_values('Week').reset_index(drop=True)
@@ -51,9 +62,7 @@ df_med = df_med.dropna().reset_index(drop=True)
 
 # ------------------- 3️⃣ Load Saved Model & Recreate Scaler -------------------
 model = XGBRegressor()
-model_dir = "../saved models"
-model_path = os.path.join(model_dir, f"xgboost_{medicine_name}.json")
-model.load_model(model_path)
+model.load_model(f"./saved models/xgboost_{medicine_name}.json")
 
 # Recreate StandardScaler from training data
 scaler = StandardScaler()
@@ -196,22 +205,7 @@ ax.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show()
 
-
-
-future_dates = pd.date_range(df_med['Week'].iloc[-1], periods=n_weeks + 1, freq='W')[1:]
-
-plt.figure(figsize=(10, 5))
-plt.plot(df_med['Week'], df_med['Total_Quantity'], label='Actual Demand', marker='o')
-plt.plot(future_dates, predictions, label='Forecasted Demand', marker='o', linestyle='--', color='red')
-plt.title(f"📈 Next 8 Weeks Forecast for {medicine_name}")
-plt.xlabel("Week")
-plt.ylabel("Predicted Quantity")
-plt.legend()
-plt.grid(True)
-plt.show()
-
-
 # ------------------- 8️⃣ Save Forecast -------------------
-output_file = f"../outputs/forecast_{medicine_name.replace(' ', '_')}_8weeks_XGB.xlsx"
+output_file = f"./outputs/forecast_{medicine_name.replace(' ', '_')}_8weeks_XGB.xlsx"
 future_df.to_excel(output_file, index=False)
 print(f"\n💾 Forecast saved to '{output_file}'")
