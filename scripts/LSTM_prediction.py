@@ -4,7 +4,7 @@
 
 import numpy as np
 import pandas as pd
-from tensorflow.keras.models import load_model
+from keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 import datetime as dt
@@ -48,7 +48,7 @@ last_sequence = scaled_data[-time_steps:].reshape(1, time_steps, 1)
 # ===============================
 # 4️⃣ Predict future demand
 # ===============================
-no_weeks = 8   # predict next 8 weeks (~2 months)
+no_weeks = 4   # predict next 8 weeks (~2 months)
 future_predictions = []
 
 for i in range(no_weeks):
